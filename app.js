@@ -2,7 +2,7 @@
 
 // MongoDB config
 const mongojs = require('mongojs');
-const connectionString = 'mongodb://<Admin>:<secretPassword>@ds135800.mlab.com:35800/ios-db';
+const connectionString = 'mongodb://Admin1:secret@ds135800.mlab.com:35800/ios-db';
 const collections = ['users'];
 
 const db = mongojs(connectionString, collections);
@@ -14,8 +14,6 @@ const express = require('express'),
 	bodyParser = require('body-parser');
 
 const app = express();
-
-app.use('/', express.static(path.join(__dirname, 'dist')));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
