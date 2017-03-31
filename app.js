@@ -9,8 +9,7 @@ const db = mongojs(connectionString, collections);
 
 var ObjectId = require('mongodb').ObjectId; 
 
-const express = require('express'),
-	path = require('path'),
+const express = require('express')
 	bodyParser = require('body-parser');
 
 const app = express();
@@ -35,7 +34,7 @@ apiRouter
 			return res.status(200).json(users);
 		})
 	})
-	.post('/users', function (req, res, next) {
+	.post('/auth/register', function (req, res, next) {
 		let user = req.body;
 
 		if (!user.username || !user.psword) {
@@ -56,6 +55,23 @@ apiRouter
 			})
 		}
 	})
+	.post('/auth/login', function(req, res, next)  {
+		if (!req.body.username || !req.body.password) {
+			return res.status(400).json({ "error": "You must send the username and the password" });
+		}
+		db['users'].findOne({ username: req.body.username }, function(err, user) {
+			if (!user) {
+				return res.status(401).json({ "error": "The username or password doesn't match" });
+			}
+			if (!(user.password === req.body.password)) {
+				return res.status(401).json({ "error": "The username or password doesn't match" });
+			}
+			
+			res.status(200).send({
+				id_token: createToken(user)
+			});
+		});
+	})
 	.post('/users/update', function(req, res, next) {
 		let user = req.body;
 		db['users'].update({ username: user.userToChange }, user, { upsert: true }, function(err, user) {
@@ -75,25 +91,6 @@ apiRouter
 				return res.status(401).json({"error": "DB: User not found"});
 			}
 			return res.status(200).json(user);
-		});
-	})
-	.post('/authenticate', function(req, res, next)  {
-		if (!req.body.username || !req.body.password) {
-			return res.status(400).json({ "error": "You must send the username and the password" });
-		}
-		db['users'].findOne({ username: req.body.username }, function(err, user) {
-			if (!user) {
-				return res.status(401).json({ "error": "The username or password doesn't match" });
-			}
-			if (!(user.password === req.body.password)) {
-				return res.status(401).json({ "error": "The username or password doesn't match" });
-			}
-			
-			res.status(200).send({
-				group: user.groupName,
-				role: user.role,
-				id_token: createToken(user)
-			});
 		});
 	})
     
