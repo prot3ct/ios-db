@@ -94,10 +94,14 @@ apiRouter
 		let event = req.body;
 
 
-		db['events'].findOne({ title: event.title, creator: evemt.creator }, function(err, evnetInDb) {
-				if (evnetInDb) {
-					return res.status(404).json({"error": "You already have that event"});
-				}
+		db['events'].findOne({ title: event.title, creator: evemt.creator }, function(err, eventInDb) {
+			if(err) {
+				return res.status(402).json({"error": "DB error"});
+			}
+			
+			if (eventInDb) {
+				return res.status(404).json({"error": "You already have that event"});
+			}
 
 			db['events'].save(event, function (err, event) {
 				if (err) {
