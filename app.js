@@ -43,14 +43,14 @@ apiRouter
 		}
 	})
 	.post('/auth/login', function(req, res, next)  {
-		if (!req.body.username || !req.body.password) {
+		if (!req.body.username || !req.body.passHash) {
 			return res.status(404).json({ "error": "You must send the username and the password" });
 		}
 		db['users'].findOne({ username: req.body.username }, function(err, user) {
 			if (!user) {
 				return res.status(404).json({ "error": "The username or password doesn't match" });
 			}
-			if (!(user.password === req.body.password)) {
+			if (!(user.password === req.body.passHash)) {
 				return res.status(404).json({ "error": "The username or password doesn't match" });
 			}
 			
