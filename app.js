@@ -30,13 +30,12 @@ apiRouter
 	})
 	.post('/auth/register', function (req, res, next) {
 		let user = req.body;
-		if (!user.username || !user.password) {
-			return res.status(404).json({ "error": "Please Enter username or password" });
-		}
+		// if (!user.username || !user.passHash) {
+		// 	return res.status(404).json({ "error": "Please Enter username or password" });
+		// }
 		else {
 			db['users'].findOne({ username: req.body.username }, function(err, userInDb) {
 				if (userInDb) {
-					console.log("HERE THREE");
 					return res.status(404).json({"error": "Please choose another username. This username is already in use!"});
 				}
 
