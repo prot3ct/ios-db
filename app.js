@@ -20,14 +20,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const apiRouter = new express.Router();
 
 apiRouter
-	.get('/users', function (req, res, next) {
-		db['users'].find(function (err, users) {
-			if (err) {
-				return res.json({ "error": "DB Error"});
-			}
-			return res.status(200).json(users);
-		})
-	})
 	.post('/auth/register', function (req, res, next) {
 		let user = req.body;
 		if (!user) {
@@ -62,10 +54,18 @@ apiRouter
 				return res.status(401).json({ "error": "The username or password doesn't match" });
 			}
 			
-			res.status(200).json({
+			res.json({
 				username: user.username
 			});
 		});
+	})
+	.get('/users', function (req, res, next) {
+		db['users'].find(function (err, users) {
+			if (err) {
+				return res.json({ "error": "DB Error"});
+			}
+			return res.json(users);
+		})
 	})
 	.post('/users/update', function(req, res, next) {
 		let user = req.body;
@@ -90,6 +90,9 @@ apiRouter
 			return res.status(200).json(user);
 		});
 	})
+	.post('/user/events'), function(req, res, next) {
+
+	}
     
 app.use('/api', apiRouter);
 
