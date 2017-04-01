@@ -10,18 +10,12 @@ const db = mongojs(connectionString, collections);
 var ObjectId = require('mongodb').ObjectId; 
 
 const express = require('express')
-	bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-const jwt = require('jsonwebtoken');
-
-function createToken(user) {
-  return jwt.sign(user, "ngEurope rocks!", { expiresIn : 60*5 });
-}
 
 const apiRouter = new express.Router();
 
@@ -36,21 +30,23 @@ apiRouter
 	})
 	.post('/auth/register', function (req, res, next) {
 		let user = req.body;
-
-		if (!user.username || !user.psword) {
-			return res.status(400).json({ "error": "Please Enter username or password" });
+		if (!user.username || !user.password) {
+			return res.status(404).json({ "error": "Please Enter username or password" });
 		}
 		else {
 			db['users'].findOne({ username: req.body.username }, function(err, userInDb) {
 				if (userInDb) {
-					return res.status(401).json({"error": "Please choose another username. This username is already in use!"});
+					console.log("HERE THREE");
+					return res.status(404).json({"error": "Please choose another username. This username is already in use!"});
 				}
-			
+
 				db['users'].save(user, function (err, user) {
 					if (err) {
-						return res.status(400).json({"error": "DB error"});
+						return res.status(404).json({"error": "DB error"});
 					}
-					return res.status(200).json(user);
+					return res.status(200).json({
+						username: user.username
+					});
 				})
 			})
 		}
@@ -67,8 +63,8 @@ apiRouter
 				return res.status(401).json({ "error": "The username or password doesn't match" });
 			}
 			
-			res.status(200).send({
-				id_token: createToken(user)
+			res.status(200).json({
+				username: user.username
 			});
 		});
 	})
@@ -79,7 +75,9 @@ apiRouter
 				return res.status(401).json({"error": "DB: User not found"});
 			}
 
-			return res.status(200).json(user);
+			return res.status(200).json({
+				username: user.username
+			});
 		});
 	})
 	.get('/users/:username', function(req, res, next) {
