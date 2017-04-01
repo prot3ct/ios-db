@@ -43,7 +43,7 @@ apiRouter
 					if (err) {
 						return res.status(404).json({"error": "DB error"});
 					}
-					return res.status(200).json({
+					return res.json({
 						username: user.username
 					});
 				})
