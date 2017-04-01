@@ -94,7 +94,7 @@ apiRouter
 		let event = req.body;
 
 
-		db['events'].findOne({ title: event.title, creator: evemt.creator }, function(err, eventInDb) {
+		db['events'].findOne({ title: event.title, creator: event.creator }, function(err, eventInDb) {
 			if(err) {
 				return res.status(402).json({"error": "DB error"});
 			}
