@@ -93,12 +93,19 @@ apiRouter
 	.post('/events', function(req, res, next) {
 		let event = req.body;
 
-		db['events'].save(event, function (err, event) {
-			if (err) {
-				return res.status(401).json({"error": "DB error"});
-			}
-			return res.json(event);
-		})
+
+		db['events'].findOne({ title: event.title, creator: evemt.creator }, function(err, evnetInDb) {
+				if (evnetInDb) {
+					return res.status(404).json({"error": "You already have that event"});
+				}
+
+			db['events'].save(event, function (err, event) {
+				if (err) {
+					return res.status(404).json({"error": "DB error"});
+				}
+				return res.json(event);
+			});
+		});
 	})
     
 app.use('/api', apiRouter);
