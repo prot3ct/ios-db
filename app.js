@@ -3,7 +3,7 @@
 // MongoDB config
 const mongojs = require('mongojs');
 const connectionString = 'mongodb://Admin1:secret@ds135800.mlab.com:35800/ios-db';
-const collections = ['users'];
+const collections = ['users', 'events'];
 
 const db = mongojs(connectionString, collections);
 
@@ -90,8 +90,15 @@ apiRouter
 			return res.status(200).json(user);
 		});
 	})
-	.post('/user/events'), function(req, res, next) {
+	.post('/events'), function(req, res, next) {
+		let event = req.body;
 
+		db['events'].save(event, function (err, event) {
+			if (err) {
+				return res.status(404).json({"error": "DB error"});
+			}
+			return res.json(event);
+		})
 	}
     
 app.use('/api', apiRouter);
