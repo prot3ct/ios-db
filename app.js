@@ -90,16 +90,16 @@ apiRouter
 			return res.status(200).json(user);
 		});
 	})
-	.post('/events'), function(req, res, next) {
+	.post('/events', function(req, res, next) {
 		let event = req.body;
 
 		db['events'].save(event, function (err, event) {
 			if (err) {
-				return res.status(404).json({"error": "DB error"});
+				return res.status(401).json({"error": "DB error"});
 			}
 			return res.json(event);
 		})
-	}
+	})
     
 app.use('/api', apiRouter);
 
