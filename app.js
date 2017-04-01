@@ -50,9 +50,9 @@ apiRouter
 			if (!user) {
 				return res.status(402).json({ "error": "The username or password doesn't match" });
 			}
-			if (!(user.password === req.body.passHash)) {
-				return res.status(404).json({ "error": "The username or password doesn't match" });
-			}
+			// if (!(user.password === req.body.passHash)) {
+			// 	return res.status(404).json({ "error": "The username or password doesn't match" });
+			// }
 			
 			res.json({
 				username: user.username
