@@ -118,7 +118,7 @@ apiRouter
 			if (err) {
 				return res.status(404).json({ "error": "DB Error"});
 			}
-			return res.json(events);
+			return res.json({"result": events});
 		});
 	});
 
