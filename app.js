@@ -174,7 +174,7 @@ apiRouter
 		
 		db['users'].find({ username: username}, function (err, events) {
 			if (err) {
-				return res.status(404).json({ "error": "DB Error"});
+				return res.status(403).json({ "error": "DB Error"});
 			}
 			return res.json({"result": events});
 		});
