@@ -168,8 +168,17 @@ apiRouter
 
 			});
 		});
-	});
-
+	})
+	.get('/:username/friends', function(req, res, next) {
+		let username = req.params.username;
+		
+		db['users'].find({ username: username}, function (err, events) {
+			if (err) {
+				return res.status(404).json({ "error": "DB Error"});
+			}
+			return res.json({"result": events});
+		});
+	})
 app.use('/api', apiRouter);
 
 const port = process.env.PORT || 3000;
