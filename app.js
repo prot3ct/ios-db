@@ -31,6 +31,7 @@ apiRouter
 					return res.status(404).json({"error": "Please choose another username. This username is already in use!"});
 				}
 
+				user.friends = [];
 				db['users'].save(user, function (err, user) {
 					if (err) {
 						return res.status(404).json({"error": "DB error"});
@@ -113,12 +114,34 @@ apiRouter
 	})
 	.get('/events/:username', function(req, res, next) {
 		let username = req.params.username;
-
+		
 		db['events'].find({ creator: username},function (err, events) {
 			if (err) {
 				return res.status(404).json({ "error": "DB Error"});
 			}
 			return res.json({"result": events});
+		});
+	})
+	.post('/:username/friends', function(req, res, next) {
+		let username = req.params.username;
+		let friendUsername = req.body.username;
+
+		db['users'].findOne({ username: username }, function(err, userInDb) {
+			if (err) {
+				return res.status(404).json({ "error": "DB Error"});
+			}
+			if (!userInDb) {
+				return res.status(404).json({ "error": "User not found" });
+			}
+
+			userInDb.friends.push(friendUsername);
+			db['users'].update({ username: username }, userInDb, { upsert: true }, function(err, updatedUser) {
+				if (err) {
+					return res.status(404).json({ "error": "DB error" });
+				}
+
+				return res.json({ updatedUser });
+			});
 		});
 	});
 
