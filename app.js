@@ -111,7 +111,17 @@ apiRouter
 			});
 		});
 	})
-    
+	.get('/events/:username', function(req, res, next) {
+		let username = req.params.username;
+
+		db['events'].find({ creator: username},function (err, events) {
+			if (err) {
+				return res.status(404).json({ "error": "DB Error"});
+			}
+			return res.json(events);
+		});
+	});
+
 app.use('/api', apiRouter);
 
 const port = process.env.PORT || 3000;
