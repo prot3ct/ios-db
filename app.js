@@ -123,24 +123,49 @@ apiRouter
 		});
 	})
 	.post('/:username/friends', function(req, res, next) {
-		let username = req.params.username;
+		let currentUsername = req.params.username;
 		let friendUsername = req.body.username;
 
-		db['users'].findOne({ username: username }, function(err, userInDb) {
+
+		let error = false;
+		db['users'].findOne({ username: friendUsername }, function(err, friendInDb) {
+			if (err) {
+				error = true;
+				return res.status(404).json({ "error": "DB Error"});
+			}
+
+			if (!friendInDb) {
+				error = true;
+				return res.status(404).json({ "error": "User with that username not found" });
+			}
+		});
+
+		db['users'].findOne({ username: currentUsername }, function(err, userInDb) {
 			if (err) {
 				return res.status(404).json({ "error": "DB Error"});
 			}
-			if (!userInDb) {
-				return res.status(404).json({ "error": "User not found" });
+
+			if(userInDb.friends.indexOf(friendUsername) === -1) {
+				userInDb.friends.push(friendUsername);
+			}
+			else {
+				error = true;
+				return res.status(404).json({ "error": "You have already added that friend." });
+			}
+			if (userInDb.friends[0] === "no friends") {
+				userInDb.friends.shift();
 			}
 
-			userInDb.friends.push(friendUsername);
-			db['users'].update({ username: username }, userInDb, { upsert: true }, function(err, updatedUser) {
+			db['users'].update({ username: currentUsername }, userInDb, { upsert: true }, function(err, updatedUser) {
 				if (err) {
+					error = true;
 					return res.status(404).json({ "error": "DB error" });
 				}
 
-				return res.json({ updatedUser });
+				if (!error) {
+					return res.json({ updatedUser });
+				}
+
 			});
 		});
 	});
