@@ -31,7 +31,7 @@ apiRouter
 					return res.status(404).json({"error": "Please choose another username. This username is already in use!"});
 				}
 
-				user.friends = [];
+				user.friends = ["no friends"];
 				db['users'].save(user, function (err, user) {
 					if (err) {
 						return res.status(404).json({"error": "DB error"});
